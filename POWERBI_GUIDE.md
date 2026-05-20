@@ -11,14 +11,76 @@
 Before connecting Power BI to ClickHouse, ensure you have:
 
 1. ✅ **Power BI Desktop** installed (download from microsoft.com/power-bi)
-2. ✅ **ClickHouse ODBC Driver** (we'll install this below)
-3. ✅ **ClickHouse credentials** from `.env` file
+2. ✅ **ClickHouse credentials** from `.env` file
+
+**Connection Details:**
+```
+Host:     sqgfslfoa6.ap-south-1.aws.clickhouse.cloud
+Port:     8443
+Database: NYCTaxiAnalysis
+Username: default
+Password: 1Ihc~Ix5Xgv98
+SSL:      Enabled
+```
 
 ---
 
-## Step 1: Install ClickHouse ODBC Driver
+## Connection Method 1: Native ClickHouse Connector (RECOMMENDED)
 
-### Download and Install
+This is the easiest and fastest method using Power BI's built-in ClickHouse connector.
+
+### Step 1: Open Power BI Desktop
+
+1. Launch **Power BI Desktop**
+2. Close the splash screen
+
+### Step 2: Get Data from ClickHouse
+
+1. Click **Home** tab in the ribbon
+2. Click **Get Data** dropdown
+3. Select **More...**
+4. In the search box, type **"ClickHouse"**
+5. Select **ClickHouse** connector (with ClickHouse logo)
+6. Click **Connect**
+
+### Step 3: Enter Connection Details
+
+In the ClickHouse connection dialog, enter:
+
+**If it asks for Server and Database separately:**
+```
+Server:    sqgfslfoa6.ap-south-1.aws.clickhouse.cloud:8443
+Database:  NYCTaxiAnalysis
+```
+
+**If it asks for Host and Port separately:**
+```
+Host:      sqgfslfoa6.ap-south-1.aws.clickhouse.cloud
+Port:      8443
+Database:  NYCTaxiAnalysis
+```
+
+**Advanced Options (if available):**
+- Protocol: HTTPS
+- SSL: Enabled/True
+- Data Connectivity mode: Import (recommended)
+
+Click **OK**
+
+### Step 4: Authentication
+
+1. Select **Database** authentication (or **Basic**)
+2. **User name:** `default`
+3. **Password:** `1Ihc~Ix5Xgv98`
+4. Click **Connect**
+
+---
+
+## Connection Method 2: ODBC Connection (ALTERNATIVE)
+
+Use this method if the native ClickHouse connector is not available in your Power BI version.
+
+### Step 1: Install ClickHouse ODBC Driver
 
 1. Visit: https://github.com/ClickHouse/clickhouse-odbc/releases
 2. Download the latest **Windows 64-bit installer** (e.g., `clickhouse-odbc-X.X.X-win64.msi`)
@@ -30,11 +92,7 @@ Before connecting Power BI to ClickHouse, ensure you have:
 - Open "ODBC Data Sources (64-bit)" from Windows Start menu
 - Check that "ClickHouse ODBC Driver (Unicode)" appears in the Drivers tab
 
----
-
-## Step 2: Configure ODBC Data Source (DSN)
-
-### Create System DSN
+### Step 2: Configure ODBC Data Source (DSN)
 
 1. Open **ODBC Data Sources (64-bit)** from Windows Start
 2. Go to **System DSN** tab
@@ -42,11 +100,7 @@ Before connecting Power BI to ClickHouse, ensure you have:
 4. Select **ClickHouse ODBC Driver (Unicode)**
 5. Click **Finish**
 
-### Configure Connection
-
-In the ClickHouse ODBC Driver DSN Configuration window, enter:
-
-**From your `.env` file:**
+**Configure Connection:**
 
 ```
 Data Source Name:    NYCTaxiAnalysis
@@ -56,77 +110,88 @@ Port:                8443
 Database:            NYCTaxiAnalysis
 Username:            default
 Password:            1Ihc~Ix5Xgv98
+Timeout:             300
 
 ☑ Use SSL/TLS
 ☑ Skip SSL Certificate Verification (for ClickHouse Cloud)
 ```
 
-**Important Settings:**
-- **Timeout:** 300 (5 minutes for large queries)
-- **SSL Mode:** Require
-
 6. Click **Test** to verify connection
 7. If successful, click **OK** to save
-8. Click **OK** to close ODBC Data Sources
 
----
-
-## Step 3: Connect Power BI Desktop to ClickHouse
-
-### Open Power BI Desktop
+### Step 3: Connect Power BI via ODBC
 
 1. Launch **Power BI Desktop**
-2. Close the splash screen
-3. Go to **Home → Get Data → More...**
+2. Go to **Home → Get Data → More...**
+3. Search for **ODBC**
+4. Select **ODBC** connector
+5. Click **Connect**
+6. **Data source name (DSN):** Select **NYCTaxiAnalysis** from dropdown
+7. Click **OK**
 
-### Add ODBC Connection
-
-1. Search for **ODBC**
-2. Select **ODBC** connector
-3. Click **Connect**
-
-### Configure Connection
-
-1. **Data source name (DSN):** Select **NYCTaxiAnalysis** from dropdown
-2. Click **OK**
-
-### Authentication
+### Step 4: Authentication
 
 1. Select **Database** authentication
 2. **User name:** `default`
-3. **Password:** `1Ihc~Ix5Xgv98` (from .env file)
+3. **Password:** `1Ihc~Ix5Xgv98`
 4. Click **Connect**
 
 ---
 
-## Step 4: Import Gold Views (Data Sources)
+## Import Gold Views (Data Sources)
 
 ### Navigator Window
 
-After connection succeeds, you'll see the Navigator window with available tables/views.
+After successful authentication, you'll see the **Navigator** window with available tables/views.
 
 ### Select All 6 Gold Views:
 
-Expand **NYCTaxiAnalysis** database and select:
+Navigate to **NYCTaxiAnalysis** database and check these 6 views:
 
-☑ **gold_kt_what_is_happening**  
-☑ **gold_kt_where_is_happening**  
-☑ **gold_kt_when_is_happening**  
-☑ **gold_kt_extent_magnitude**  
-☑ **gold_kt_what_not_happening**  
-☑ **gold_kt_characteristics_comparison**
+☑ **gold_kt_what_is_happening** (9 rows - Service patterns)  
+☑ **gold_kt_where_is_happening** (262 rows - Geographic analysis)  
+☑ **gold_kt_when_is_happening** (31 rows - Temporal patterns)  
+☑ **gold_kt_extent_magnitude** (5 rows - Statistical distributions)  
+☑ **gold_kt_what_not_happening** (7 rows - Data quality issues)  
+☑ **gold_kt_characteristics_comparison** (4 rows - IS vs IS NOT comparisons)
+
+**Preview the Data:**
+Click on each view in the Navigator to see a preview and confirm data is loading correctly.
 
 ### Load Options
 
-1. Choose **Import** mode (NOT DirectQuery for best performance)
-2. Click **Load** (NOT Transform Data)
-3. Wait for data to load (may take 1-2 minutes for 15M rows of source data)
+1. Make sure all 6 views are checked
+2. Choose **Import** mode (NOT DirectQuery for best performance)
+3. Click **Load** button (NOT "Transform Data")
+4. Wait for data to import (10-30 seconds)
 
 **Progress:** You'll see loading progress in bottom status bar.
 
 ---
 
-## Step 5: Verify Data Load
+## Verify Data Load
+
+### Check Fields Pane
+
+On the right side of Power BI, you should see all 6 tables listed in the **Fields** pane with their columns:
+
+**gold_kt_what_is_happening** (9 rows)
+- dimension_category, characteristic, volume, percentage, avg_value, problem_indicator
+
+**gold_kt_where_is_happening** (262 rows)
+- location_id, location_name, pickup_count, dropoff_count, percentage_of_total, avg_fare, avg_distance, zone_classification
+
+**gold_kt_when_is_happening** (31 rows)
+- time_dimension, time_value, trip_volume, total_revenue, avg_fare, avg_distance, classification
+
+**gold_kt_extent_magnitude** (5 rows)
+- metric_name, min_value, max_value, avg_value, median_value, percentile_95, outlier_count, outlier_percentage
+
+**gold_kt_what_not_happening** (7 rows)
+- dimension, null_count, null_percentage, data_quality_score
+
+**gold_kt_characteristics_comparison** (4 rows)
+- comparison_dimension, is_category, is_not_category, is_metric_value, is_not_metric_value, difference, difference_percentage
 
 ### Check Data Model
 
@@ -134,7 +199,7 @@ Expand **NYCTaxiAnalysis** database and select:
 2. Verify all 6 gold views appear as tables
 3. No relationships needed (each view is independent for specific analysis)
 
-### Check Data
+### Check Data Grid
 
 1. Go to **Data** view (left sidebar, table with data icon)
 2. Click each gold view in the Fields pane
@@ -147,6 +212,19 @@ Expand **NYCTaxiAnalysis** database and select:
 - gold_kt_extent_magnitude: **5 rows**
 - gold_kt_what_not_happening: **7 rows**
 - gold_kt_characteristics_comparison: **4 rows**
+
+### Create Test Visual
+
+Let's verify with a simple visual:
+
+1. Go to **Report** view (first icon on left sidebar)
+2. Select **Table** visual from Visualizations pane
+3. From **gold_kt_what_is_happening**, drag these fields:
+   - characteristic
+   - volume
+   - percentage
+
+You should see vendors and payment methods with their trip volumes!
 
 ---
 
@@ -533,18 +611,25 @@ Format: Large buttons with icons, 3x2 grid
 
 ### Connection Issues
 
+**Problem:** Can't find ClickHouse connector in Power BI  
+**Solution:**
+- Update Power BI Desktop to latest version
+- Try ODBC method (Connection Method 2 above)
+- Alternatively, use PostgreSQL connector with port 9005 if ClickHouse Cloud supports it
+
 **Problem:** Can't connect to ClickHouse  
 **Solution:**
-- Verify ODBC DSN configuration
-- Test connection in ODBC Data Sources
+- Verify connection details: sqgfslfoa6.ap-south-1.aws.clickhouse.cloud:8443
 - Check firewall allows port 8443
+- Ensure SSL/HTTPS is enabled
 - Verify credentials from .env file
 
 **Problem:** Authentication failed  
 **Solution:**
-- Re-enter password (copy exactly from .env)
-- Remove spaces from username/password
-- Try "default" as username (lowercase)
+- Re-enter password exactly: 1Ihc~Ix5Xgv98
+- Remove any spaces from username/password
+- Use "default" as username (lowercase)
+- Try Database or Basic authentication option
 
 ### Data Load Issues
 
