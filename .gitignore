@@ -1,0 +1,106 @@
+# ============================================================================
+# .gitignore for NYC Taxi Analysis Project
+# ============================================================================
+
+# Environment variables and credentials (NEVER COMMIT THESE!)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+*.swp
+temp_*
+tmp_*
+
+# Data files (don't commit large datasets)
+*.parquet
+*.csv
+*.tsv
+*.xlsx
+*.xls
+data/
+raw_data/
+
+# Power BI
+*.pbix.tmp
+*.pbit
+
+# ClickHouse local files (if any)
+*.ch
+clickhouse-data/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Test outputs
+test_output/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Keep these files
+!.gitignore
+!README.md
+!SCHEMA.md
+!AGENTS.md
+!POWERBI_GUIDE.md
+!all_sql_code.sql
